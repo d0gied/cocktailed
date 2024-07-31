@@ -1,0 +1,26 @@
+services:
+  backend:
+    image: coctailed-backend:latest
+    hostname: backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "5000:80"
+    networks:
+      - coctailed-network
+
+  frontend:
+    image: coctailed-frontend:latest
+    hostname: frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80"
+    networks:
+      - coctailed-network
+
+networks:
+  coctailed-network:
+    driver: bridge
