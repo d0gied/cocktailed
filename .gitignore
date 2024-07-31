@@ -128,3 +128,11 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# Python
+*.pyc
+*.pyo
+.venv/
+__pycache__/
+
+/mongo

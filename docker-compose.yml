@@ -1,6 +1,68 @@
 services:
+  mongo:
+    container_name: cocktailed-mongo
+    hostname: mongo
+    image: mongo
+    volumes:
+      - ./mongo/data:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+      MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
+    ports:
+      - "27017:27017"
+    networks:
+      - coctailed-network
+    env_file:
+      - .env
+
+  elasticsearch:
+    container_name: cocktailed-elasticsearch
+    hostname: elasticsearch
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.10.2
+    environment:
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - "9200:9200"
+    networks:
+      - coctailed-network
+
+  mongo-express:
+    container_name: cocktailed-mongo-express
+    hostname: mongo-express
+    image: mongo-express
+    environment:
+      ME_CONFIG_MONGODB_SERVER: mongo
+      ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+
+      ME_CONFIG_BASICAUTH_USERNAME: ${ME_CONFIG_BASICAUTH_USERNAME}
+      ME_CONFIG_BASICAUTH_PASSWORD: ${ME_CONFIG_BASICAUTH_PASSWORD}
+    ports:
+      - "8081:8081"
+    networks:
+      - coctailed-network
+    env_file:
+      - .env
+    depends_on:
+      - mongo
+
+  kibana:
+    container_name: cocktailed-kibana
+    hostname: kibana
+    image: docker.elastic.co/kibana/kibana:7.10.2
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    ports:
+      - "5601:5601"
+    networks:
+      - coctailed-network
+    depends_on:
+      - elasticsearch
+
   backend:
-    image: coctailed-backend:latest
+    container_name: cocktailed-backend
     hostname: backend
     build:
       context: ./backend
@@ -9,9 +71,12 @@ services:
       - "5000:80"
     networks:
       - coctailed-network
+    depends_on:
+      - mongo
+      - elasticsearch
 
   frontend:
-    image: coctailed-frontend:latest
+    container_name: cocktailed-frontend
     hostname: frontend
     build:
       context: ./frontend
