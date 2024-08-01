@@ -1,0 +1,2 @@
+export const headerFilter = {fontFamily: "Inter", fontStyle: "normal", fontWeight: "700", fontSize: "16px", lineHeight: "140%"}
+export const radioButtonHolder = {fontFamily: "Inter", fontStyle: "normal", fontWeight: "400", fontSize: "16px", lineHeight: "140%"}
